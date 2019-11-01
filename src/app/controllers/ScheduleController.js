@@ -6,7 +6,7 @@ import User from '../models/User';
 class ScheduleController {
   async index(req, res) {
     const checkProvider = await User.findOne({
-      were: {
+      where: {
         user_id: req.userId,
         provider: true,
       },
@@ -20,7 +20,7 @@ class ScheduleController {
     const parsedDate = parseISO(date);
 
     const appointments = await Appointment.findAll({
-      were: {
+      where: {
         provider_id: req.userId,
         canceled_at: null,
         date: {

@@ -4,7 +4,7 @@ import Notification from '../schemas/Notification';
 class NotificationController {
   async index(req, res) {
     const checkProvider = await User.findOne({
-      were: {
+      where: {
         user_id: req.userId,
         provider: true,
       },
