@@ -7,7 +7,7 @@ class ScheduleController {
   async index(req, res) {
     const checkProvider = await User.findOne({
       where: {
-        user_id: req.userId,
+        id: req.userId,
         provider: true,
       },
     });
@@ -26,8 +26,8 @@ class ScheduleController {
         date: {
           [Op.between]: [startOfDay(parsedDate), endOfDay(parsedDate)],
         },
-        order: ['date'],
       },
+      order: ['date'],
     });
     return res.json(appointments);
   }
