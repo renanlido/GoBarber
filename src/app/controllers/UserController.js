@@ -1,12 +1,14 @@
 import * as Yup from 'yup';
-import User from '../models/user';
+import User from '../models/User';
 
 class UserControler {
   async store(req, res) {
     // Verificando a existência do usuário através do email
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      email: Yup.string().required(),
+      email: Yup.string()
+        .email()
+        .required(),
       password: Yup.string()
         .required()
         .min(6),
