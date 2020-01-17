@@ -1,24 +1,26 @@
-import exphbs from 'express-handlebars';
-import { resolve } from 'path';
-import nodemailerhbs from 'nodemailer-express-handlebars';
 import nodemailer from 'nodemailer';
+import { resolve } from 'path';
+import exphbs from 'express-handlebars';
+import nodemailerhbs from 'nodemailer-express-handlebars';
 import mailConfig from '../config/mail';
 
 class Mail {
   constructor() {
-    const { host, port, secure, auth } = mailConfig;
+    const { host, auth, secure, port } = mailConfig;
 
     this.transporter = nodemailer.createTransport({
       host,
-      port,
       secure,
+      port,
       auth: auth.user ? auth : null,
     });
+
     this.configureTemplates();
   }
 
   configureTemplates() {
     const viewPath = resolve(__dirname, '..', 'app', 'views', 'emails');
+
     this.transporter.use(
       'compile',
       nodemailerhbs({
@@ -34,8 +36,8 @@ class Mail {
     );
   }
 
-  sendMail(message) {
-    return this.transporter.sendMail({
+  sendmail(message) {
+    this.transporter.sendMail({
       ...mailConfig.default,
       ...message,
     });

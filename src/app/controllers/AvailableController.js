@@ -15,12 +15,12 @@ class AvailableController {
     const { date } = req.query;
 
     if (!date) {
-      return res.status(400).json({ error: 'Invalid date.' });
+      return res.status(400).json({ error: 'Invalid date' });
     }
 
     const searchDate = Number(date);
 
-    const appontment = await Appointment.findAll({
+    const appointments = await Appointment.findAll({
       where: {
         provider_id: req.params.providerId,
         canceled_at: null,
@@ -43,7 +43,6 @@ class AvailableController {
       '17:00',
       '18:00',
       '19:00',
-      '20:00',
     ];
 
     const available = schedule.map(time => {
@@ -57,7 +56,7 @@ class AvailableController {
         value: format(value, "yyyy-MM-dd'T'HH:mm:ssxxx"),
         available:
           isAfter(value, new Date()) &&
-          !appontment.find(a => format(a.date, 'HH:mm') === time),
+          !appointments.find(a => format(a.date, 'HH:mm') === time),
       };
     });
 

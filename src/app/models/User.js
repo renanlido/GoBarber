@@ -1,7 +1,7 @@
 import Sequelize, { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-class User extends Model {
+export default class User extends Model {
   static init(sequelize) {
     super.init(
       {
@@ -20,16 +20,16 @@ class User extends Model {
         user.password_hash = await bcrypt.hash(user.password, 8);
       }
     });
+
     return this;
   }
 
+  /** SECTION Relacionamento entre a tabela File e a chave estrangeira avatar_id */
   static associate(models) {
     this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' });
   }
 
-  chekPassword(password) {
+  checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
   }
 }
-
-export default User;

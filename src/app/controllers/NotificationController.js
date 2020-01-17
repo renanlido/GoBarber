@@ -3,33 +3,33 @@ import Notification from '../schemas/Notification';
 
 class NotificationController {
   async index(req, res) {
-    const checkProvider = await User.findOne({
-      where: {
-        id: req.userId,
-        provider: true,
-      },
+    const isProvider = await User.findOne({
+      where: { id: req.userId, provider: true },
     });
 
-    if (!checkProvider) {
-      return res.status(401).json('Only providers can load notifications');
+    if (!isProvider) {
+      return res
+        .status(401)
+        .json({ error: 'Only Provider can load notifications' });
     }
 
     const notifications = await Notification.find({
       user: req.userId,
     })
-      .sort({ createdAt: 'desc' })
+      .sort({ createdAt: -1 })
       .limit(20);
 
     return res.json(notifications);
   }
 
   async update(req, res) {
-    const notificatoin = await Notification.findByIdAndUpdate(
+    const notification = await Notification.findOneAndUpdate(
       req.params.id,
       { read: true },
       { new: true }
     );
-    return res.json(notificatoin);
+
+    return res.json(notification);
   }
 }
 

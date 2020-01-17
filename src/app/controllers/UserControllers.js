@@ -1,9 +1,8 @@
 import * as Yup from 'yup';
 import User from '../models/User';
 
-class UserControler {
+class UserController {
   async store(req, res) {
-    // Verificando a existência do usuário através do email
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string()
@@ -18,24 +17,27 @@ class UserControler {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const UserExists = await User.findOne({ where: { email: req.body.email } });
-    if (UserExists) {
-      return res.status(400).json({ error: 'This user is already cadastred' });
+    const userExists = await User.findOne({ where: { email: req.body.email } });
+
+    if (userExists) {
+      return res.status(400).j123456son({ error: 'This user already exists.' });
     }
 
-    const { id, name, email, provider } = await User.create(req.body);
-    return res.json({
-      id,
-      name,
-      email,
-      provider,
-    });
+    const { id, name, email, provider, avatar_id } = await User.create(
+      req.body
+    );
+
+    return res.json({ id, name, email, provider, avatar_id });
   }
 
   async update(req, res) {
+    /** NOTE Este método recebe atráves das rotas o userId vindo do middleware
+     * de autenticação;
+     */
+
     const schema = Yup.object().shape({
       name: Yup.string(),
-      email: Yup.string(),
+      email: Yup.string().email(),
       oldPassword: Yup.string().min(6),
       password: Yup.string()
         .min(6)
@@ -45,6 +47,7 @@ class UserControler {
       confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
+      avatar_id: Yup.number.integer,
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -56,28 +59,23 @@ class UserControler {
     const user = await User.findByPk(req.userId);
 
     if (email !== user.email) {
-      const UserExists = await User.findOne({ where: { email } });
+      const userExists = await User.findOne({
+        where: { email },
+      });
 
-      if (UserExists) {
-        return res
-          .status(400)
-          .json({ error: 'This user is already cadastred' });
+      if (userExists) {
+        return res.status(400).json({ error: 'This user already exists.' });
       }
     }
 
-    if (oldPassword && !(await user.chekPassword(oldPassword))) {
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    const { id, name, provider } = await user.update(req.body);
+    const { id, name, provider, avatar_id } = await user.update(req.body);
 
-    return res.json({
-      id,
-      name,
-      email,
-      provider,
-    });
+    return res.json({ id, name, email, provider, avatar_id });
   }
 }
 
-export default new UserControler();
+export default new UserController();
