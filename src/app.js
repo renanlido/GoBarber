@@ -26,7 +26,7 @@ class App {
     this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(cors());
     this.server.use(express.json());
-    /** SECTION rota estátiaca para servir arquivos */
+    /** SECTION static route to serve files */
     this.server.use(
       '/files',
       express.static(path.resolve(__dirname, '..', 'temp', 'uploads'))
